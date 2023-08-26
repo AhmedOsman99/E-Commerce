@@ -30,7 +30,7 @@ def getById(id, model, modelSerializer):
 
 def addInstance(request, model, modelSerializer):
     try:
-        model_serializer = modelSerializer(data=request.data)
+        model_serializer = modelSerializer(data=request.data, context={'request':request})
         if model_serializer.is_valid():
             model_serializer.save()
             data = model_serializer.data

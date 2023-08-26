@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Plan
+from .models import Plan, CustomPlan
 from .serializers import PlanSerializer, CustomPlanSerializer
 from rest_framework.decorators import api_view
 from helper.crud import getAll, getById, addInstance, editInstance, deleteInstance
@@ -22,10 +22,10 @@ def get_plan(request, id):
 def add_plan(request):
     data, http_status = addInstance(
         request, Plan, PlanSerializer)
-    return Response(data=data, status=http_status)    
+    return Response(data=data, status=http_status) 
 
 
-@api_view(['PUT'])
+@api_view(['put'])
 def edit_plan(request, id):
     data, http_status = editInstance(
         request, id, Plan, PlanSerializer)
@@ -47,7 +47,7 @@ def get_custom_plan(request):
         no_of_products = int(no_of_products)
         storage = int(storage)
         data = {"no_of_products":no_of_products, "storage": storage}
-        model_serializer = CustomPlanSerializer(data=data)
+        model_serializer = CustomPlanSerializer(data=data, context={'request':request})
         if model_serializer.is_valid():
             price = model_serializer.calculate_price(no_of_products, storage)
             price = round(price, 2)
@@ -60,3 +60,25 @@ def get_custom_plan(request):
         data = {"Error": f"An error occurred => {e}"}
         http_status = status.HTTP_400_BAD_REQUEST
     return Response(data=data, status=http_status)
+
+
+@api_view(['post'])
+def add_custom_plan(request):
+    data, http_status = addInstance(
+        request, CustomPlan, CustomPlanSerializer)
+    return Response(data=data, status=http_status)
+
+
+@api_view(['put'])
+def edit_custom_plan(request, id):
+    data, http_status = editInstance(
+        request, id, CustomPlan, CustomPlanSerializer)
+    return Response(data=data, status=http_status)
+
+
+@api_view(['delete'])
+def delete_custom_plan(request, id):
+    data, http_status = deleteInstance(
+        request, id, CustomPlan)
+    return Response(data=data, status=http_status)
+
